@@ -81,7 +81,6 @@ app.get("/images", function(req, res){
         }
         else{
             res.render("images", {images: images});
-
         }
     });
 });
