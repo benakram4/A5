@@ -93,6 +93,7 @@ app.get("/employees/add", function(req, res){
 
 //images/add route
 app.get("/images/add", function(req, res){
+    //redirect to images page if render was seccessful
     res.render("addImage");
 });
 
@@ -104,25 +105,25 @@ app.get("/employees", function(req, res){
         console.log("this is req.query.status: " + req.query.status);
         data.getEmployeesByStatus(req.query.status)
         .then((data) => res.render("employees", {employees: data}))
-        .catch((err) => res.render({message: `no results returned\n${err}`}));
+        .catch((err) => res.render('employees',{message: `${err}`}));
         console.log("getting emp : getEmployeesByStatus()");
     }   
     else if(req.query.department){ //query with employees department
         console.log("this is req.query.department: " + req.query.department);
         data.getEmployeesByDepartment(req.query.department)
         .then((data) => res.render("employees", {employees: data}))
-        .catch((err) => res.render({message: `no results returned\n${err}`}));
+        .catch((err) => res.render({message: `${err}`}));
     }
     else if(req.query.manager){ //query with employees manager id
         console.log("this is req.query.manager: " + req.query.manager);
         data.getEmployeesByManager(req.query.manager)
         .then((data) => res.render("employees", {employees: data}))
-        .catch((err) => res.render({message: `no results returned\n${err}`}));
+        .catch((err) => res.render({message: `${err}`}));
     }
     else{
         data.getAllEmployees() // without query 
         .then((data) => res.render("employees", {employees: data}))
-        .catch((err) => res.render({message: `no results returned\n${err}`}))
+        .catch((err) => res.render("employees",{message: `${err}`}))
         console.log("getting all employees : getAllEmployees()");
     }
 });
@@ -139,9 +140,10 @@ app.get("/managers", function(req, res){
 app.get("/departments", function(req, res){
     data.getDepartments()
     .then((data) => {res.render("departments", {departments: data})})
-    .catch((err) => {console.log(`${err}`)});
+    .catch((err) => {res.render("departments", {message: `error${err}`})})
     console.log("getting dep : getDepartments()");
 });
+    
 
 //upload image function
 app.post("/images/add",upload.single("imageFile") ,function(req, res){
