@@ -7,18 +7,42 @@
  *  Online (Heroku) URL:  * https://safe-hamlet-31522.herokuapp.com/ *
  * ********************************************************************************/
 
+// ======Create express application ================================================================
 var express = require("express"); // Include express.js module
 var app = express();
+app.use(express.static('public')); // serve static files from the public folder
 app.use(express.json()); // parse incoming JSON requests and place them in req.body
 app.use(express.urlencoded({ extended: true })); // parse incoming urlencoded form data and place it in req.body
+// =================================================================================================
 
+// === Create path to static files =================================================================
 var path = require("path"); // include module path to use __dirname, and function path.join()
 var data = require("./data-service.js");
+// =================================================================================================
 
-var multer = require("multer"); // include file handling module
-var fs = require("fs");  //includes writing to a file 
+// === Include file handling module ================================================================
+var multer = require("multer"); 
+// === Multer setup ===============================================================================
+const storage = multer.diskStorage({
+    destination: "./public/images/uploaded",
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
 
-const exphbs = require("express-handlebars"); // include handlebars module
+const upload = multer({ storage: storage });
+// =================================================================================================
+// =================================================================================================
+
+// === includes writing to a file ==================================================================
+var fs = require("fs");  
+// =================================================================================================
+
+// === Include handlebars ==========================================================================
+const exphbs = require("express-handlebars"); 
+// =================================================================================================
+
+// === Set up handlebars engine ====================================================================
 app.engine(".hbs", exphbs.engine({ 
     extname: ".hbs", 
     helpers: {
@@ -32,35 +56,38 @@ app.engine(".hbs", exphbs.engine({
             throw new Error("Handlebars Helper equal needs 2 parameters");
             if (lvalue != rvalue) {
             return options.inverse(this);
-            } else {
+            } 
+            else {
             return options.fn(this);
             }
         }
     }
 }));
-app.set("view engine", ".hbs");
 
+app.set("view engine", ".hbs");
+// =================================================================================================
+
+// === Enable dynamic menu ========================================================================
 app.use(function(req,res,next){
      let route = req.baseUrl + req.path;
     app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
      next(); }); 
+// =================================================================================================
 
-app.use(express.static('public'));
 
+// === Setup HTTP server to listen on port 8080 ====================================================
 var HTTP_PORT = process.env.PORT || 8080;
 // call this function after the http server starts listening for requests
 function onHttpStart(){
     console.log("Express http server listening on port: " + HTTP_PORT);
 };
+// =================================================================================================
 
-const storage = multer.diskStorage({
-    destination: "./public/images/uploaded",
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
 
-const upload = multer({ storage: storage });
+
+//================================================================================================//
+//  GET ROUTES
+//================================================================================================//
 
 //home route
 app.get("/", function(req, res){
@@ -72,6 +99,17 @@ app.get("/about", function(req, res){
     res.render("about");
 });
 
+//employees/add route
+app.get("/employees/add", function(req, res){
+    res.render("addEmployee");
+});
+
+//images/add route
+app.get("/images/add", function(req, res){
+    //redirect to images page if render was successful
+    res.render("addImage");
+});
+
 // images route
 app.get("/images", function(req, res){
     //return all images in the images folder
@@ -80,22 +118,12 @@ app.get("/images", function(req, res){
             console.log("Error reading images");
         }
         else{
+            console.log("Images read successfully");
             res.render("images", {images: images});
         }
     });
 });
 
-
-//employees/add route
-app.get("/employees/add", function(req, res){
-    res.render("addEmployee");
-});
-
-//images/add route
-app.get("/images/add", function(req, res){
-    //redirect to images page if render was seccessful
-    res.render("addImage");
-});
 
 
 //employees route and employee related queries
@@ -145,6 +173,21 @@ app.get("/departments", function(req, res){
 });
     
 
+//get employee by emp number function
+app.get("/employee/:value", (req, res) =>{
+    data.getEmployeeByNum(req.params.value)
+    .then((data) => {res.render("employee", {employee: data})})
+    .catch((err) => {console.log(`Error getting emp by num ${err}`)});
+    console.log("getting employees by value : getEmployeeByNum()");
+    
+})
+
+//================================================================================================//
+
+//================================================================================================//
+//  POST ROUTES
+//================================================================================================//
+
 //upload image function
 app.post("/images/add",upload.single("imageFile") ,function(req, res){
     fs.readdir("./public/images/uploaded", (err, files) => {
@@ -155,7 +198,7 @@ app.post("/images/add",upload.single("imageFile") ,function(req, res){
         }
         else{
             console.log("Image Uploaded successfully");
-            res.json({images:files});
+            res.redirect("/images");
         }
      });
      
@@ -169,14 +212,7 @@ app.post("/employees/add",(req,res) =>{
     console.log("adding emp");
 })
 
-//get employee by emp number function
-app.get("/employee/:value", (req, res) =>{
-    data.getEmployeeByNum(req.params.value)
-    .then((data) => {res.render("employee", {employee: data})})
-    .catch((err) => {console.log(`Error getting emp by num ${err}`)});
-    console.log("getting employees by value : getEmployeeByNum()");
-    
-})
+
 
 //update employee
 app.post("/employee/update", (req, res)=> {
@@ -187,6 +223,8 @@ app.post("/employee/update", (req, res)=> {
     console.log("updating emp");
 });
 
+
+//================================================================================================//
 
 app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, "views/error404.html"));
