@@ -154,7 +154,11 @@ exports.updateDepartment = (departmentData) => {
             departmentData[property] = null;
         }
     };
-    Department.update(departmentData)
+    console.log("&&&&&&&&&&");
+    console.log(departmentData);
+    let values = departmentData;
+    let condition = {where: {departmentId: departmentData.departmentId}};
+    Department.update(values,condition )
     .then(() => resolve())
     .catch((err) => reject(`\nunable to update department: ${err}\n`));
     })

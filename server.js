@@ -165,15 +165,6 @@ app.get("/managers", function(req, res){
     console.log("getting managers : getManagers()");
 });
 
-//departments route
-app.get("/departments", function(req, res){
-    data.getDepartments()
-    .then((data) => {res.render("departments", {departments: data})})
-    .catch((err) => {res.render("departments", {message: `error${err}`})})
-    console.log("getting dep : getDepartments()");
-});
-    
-
 //get employee by emp number function
 app.get("/employee/:value", (req, res) =>{
     data.getEmployeeByNum(req.params.value)
@@ -183,6 +174,31 @@ app.get("/employee/:value", (req, res) =>{
     console.log("getting employees by value : getEmployeeByNum()");
     
 })
+
+//departments route
+app.get("/departments", function(req, res){
+    data.getDepartments()
+    .then((data) => {res.render("departments", {departments: data})})
+    .catch((err) => {res.render("departments", {message: `error${err}`})})
+    console.log("getting dep : getDepartments()");
+});
+  
+//add department route
+app.get("/departments/add", function(req, res){
+    res.render("addDepartment");
+});
+
+
+app.get("/department/:value", function(req, res){
+    data.getDepartmentById(req.params.value)
+    .then((data) => {res.render("department", {department: data})})
+    .catch((err) => {res.status(404).send(`\nDepartment not found${err}\n`)});
+    //if data is undefined, send 404 error
+    if(data === undefined){
+        res.status(404).send(`\nDepartment not found\n`);
+    }
+    console.log("\ngetting dep by id : getDepartmentById()\n");
+});
 
 //================================================================================================//
 
@@ -224,6 +240,24 @@ app.post("/employee/update", (req, res)=> {
     .catch((err) => {console.log(`Error updating emp ${err}`)});
     console.log("updating emp");
 });
+
+//add department
+app.post("/departments/add", (req, res) => {
+    data.addDepartment(req.body)
+    .then(() => {res.redirect("/departments")})
+    .catch((err) => {console.log(`\nError adding dep: ${err}\n`)
+    });
+});
+
+//update department
+app.post("/department/update", (req, res) => {
+    data.updateDepartment(req.body)
+    .then(() => {res.redirect("/departments")})
+    .catch((err) => {console.log(`\nError updating dep: ${err}\n`)
+    });
+});
+
+
 
 
 //================================================================================================//
