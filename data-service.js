@@ -81,7 +81,7 @@ exports.getDepartments = () =>{
     return new Promise ((resolve, reject) =>{
         Department.findAll()
         .then((data) => resolve(data))
-        .catch((err) => reject(`no results returned for department ${err}`));
+        .catch((err) => reject(`\nno results returned for department: ${err}\n`));
     });
 }
 
@@ -112,7 +112,7 @@ exports.updateEmployee = (employeeData) => {
         };
         Employee.update(employeeData)
         .then(() => resolve())
-        .catch((err) => reject(`unable to update employee ${err}`));
+        .catch((err) => reject(`\nunable to update employee: ${err}\n`));
     });
 }
 
@@ -128,9 +128,53 @@ exports.addEmployee = (employeeData) => {
         };
         Employee.create(employeeData)
         .then(() => resolve())
-        .catch((err) => reject(`unable to create employee ${err}`));
+        .catch((err) => reject(`\nunable to create employee ${err}\n`));
     });
 };
+
+//addDepartment function
+exports.addDepartment = (departmentData) => {
+    return new Promise((resolve, reject) => {
+        for(const property in departmentData){
+            if(departmentData[property] == ""){
+                departmentData[property] = null;
+            }
+        };
+        Department.create(departmentData)
+        .then(() => resolve())
+        .catch((err) => reject(`\nunable to create department: ${err} \n`));
+    });
+};
+
+//updateDepartment function
+exports.updateDepartment = (departmentData) => {
+    return new Promise((resolve, reject) => {
+    for(const property in departmentData){
+        if(departmentData[property] == ""){
+            departmentData[property] = null;
+        }
+    };
+    Department.update(departmentData)
+    .then(() => resolve())
+    .catch((err) => reject(`\nunable to update department: ${err}\n`));
+    })
+}
+
+//getDepartmentById function
+exports.getDepartmentById = (id) => {
+    return new Promise((resolve, reject) => {
+        Department.findAll({
+            where: {
+                departmentId: id
+            }
+        })
+        .then((data) => resolve(data[0]))
+        .catch((err) => reject(`\nno results returned for department: ${err}\n`));
+    });
+}
+
+
+
     
 
 //getEmployeesByStatus function
@@ -140,7 +184,7 @@ exports.getEmployeesByStatus = (status) => {
             where: {status: status}
         })
         .then((data) => resolve(data))
-        .catch((err) => reject(`no results returned for status ${err}`));
+        .catch((err) => reject(`\nno results returned for status: ${err}\n`));
     });
 }
 
@@ -151,7 +195,7 @@ exports.getEmployeesByDepartment = (department) => {
             where: {department: department}
         })
         .then((data) => resolve(data))
-        .catch((err) => reject(`no results returned for department ${err}`));
+        .catch((err) => reject(`\nno results returned for department: ${err}\n`));
     });
 };
 
@@ -162,7 +206,7 @@ exports.getEmployeesByManager = (managerNum) => {
             where: {employeeManagerNum: managerNum}
         })
         .then((data) => resolve(data))
-        .catch((err) => reject(`no results returned for manager ${err}`));
+        .catch((err) => reject(`\nno results returned for manager: ${err}\n`));
     });
 };
 
@@ -173,6 +217,7 @@ exports.getEmployeeByNum = (num) => {
             where: {employeeNum: num}
         })
         .then((data) => resolve(data))
-        .catch((err) => reject(`no results returned for employee number ${err}`));
+        .catch((err) => reject(`\nno results returned for employee number: ${err}\n`));
     });
-}
+};
+

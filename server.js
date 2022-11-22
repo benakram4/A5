@@ -29,11 +29,9 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
-
 const upload = multer({ storage: storage });
 // =================================================================================================
-// =================================================================================================
-
+   
 // === includes writing to a file ==================================================================
 var fs = require("fs");  
 // =================================================================================================
@@ -60,6 +58,9 @@ app.engine(".hbs", exphbs.engine({
             else {
             return options.fn(this);
             }
+        },
+        viewData: (view) =>{
+            return view.fn(this);
         }
     }
 }));
@@ -176,6 +177,7 @@ app.get("/departments", function(req, res){
 //get employee by emp number function
 app.get("/employee/:value", (req, res) =>{
     data.getEmployeeByNum(req.params.value)
+    //render employee view and pass the employee from that data base that matches the employee number
     .then((data) => {res.render("employee", {employee: data})})
     .catch((err) => {console.log(`Error getting emp by num ${err}`)});
     console.log("getting employees by value : getEmployeeByNum()");
