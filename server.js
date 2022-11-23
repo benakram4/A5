@@ -102,7 +102,9 @@ app.get("/about", function(req, res){
 
 //employees/add route
 app.get("/employees/add", function(req, res){
-    res.render("addEmployee");
+    data.getDepartments()
+    .then((data) => res.render("addEmployee", {departments: data}))
+    .catch((err) => res.render("addEmployee", {departments: []}));
 });
 
 //images/add route
