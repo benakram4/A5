@@ -168,14 +168,49 @@ app.get("/managers", function(req, res){
 });
 
 //get employee by emp number function
-app.get("/employee/:value", (req, res) =>{
-    data.getEmployeeByNum(req.params.value)
-    //render employee view and pass the employee from that data base that matches the employee number
-    .then((data) => {res.render("employee", {employee: data})})
-    .catch((err) => {console.log(`Error getting emp by num ${err}`)});
-    console.log("getting employees by value : getEmployeeByNum()");
-    
-})
+app.get("/employee/:empNum", (req, res) => {
+	// initialize an empty object to store the valueslet 
+	viewData = {};
+
+    console.log("\n\nview data when it empty: " + viewData + "\n\n");
+
+	data.getEmployeeByNum(req.params.empNum)
+	.then((data) => {
+        if (data) {
+		viewData.employee = data; //store employee data in the "viewData" object as "employee"
+        console.log("\n\nset employee to null if none were returned: " + viewData + "\n\n");
+		} 
+		else {
+			viewData.employee = null; // set employee to null if none were returned
+            console.log("\n\nset employee to null if none were returned: " + viewData + "\n\n");
+		}
+	})
+	.catch(() => {
+		viewData.employee= null; // set employee to null if there was an error 
+		}).then(data.getDepartments)
+		.then((data) => {
+			viewData.departments = data; // store department data in the "viewData" object as "departments"
+
+			// loop through viewData.departments and once we have found the departmentId that matches
+			// the employee's "department" value, add a "selected" property to the matching 
+			// viewData.departments object
+			for (let i = 0; i < viewData.departments.length; i++) {
+				if (viewData.departments[i].departmentId == viewData.employee.department) {
+					viewData.departments[i].selected = true;
+                    console.log("\n\nset department: " + viewData + "\n\n");
+				}
+			}
+		}).catch(() => {
+			viewData.departments = []; // set departments to empty if there was an error
+			}).then(() => {
+				if (viewData.employee== null) { // if no employee -return an error
+					res.status(404).send("Employee Not Found");
+				} else {
+                    console.log("\n\nFound Emp and rendering " + viewData + "\n\n");
+					res.render("employee", { viewData: viewData }); // render the "employee" view
+				}
+			});
+});
 
 //departments route
 app.get("/departments", function(req, res){
@@ -240,7 +275,7 @@ app.post("/employee/update", (req, res)=> {
     data.updateEmployee(req.body)
     .then(() => {res.redirect("/employees")})
     .catch((err) => {console.log(`Error updating emp ${err}`)});
-    console.log("updating emp");
+    //console.log("updating emp");
 });
 
 //add department

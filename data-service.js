@@ -110,7 +110,11 @@ exports.updateEmployee = (employeeData) => {
                 employeeData[property] = null;
             }
         };
-        Employee.update(employeeData)
+
+        let values = employeeData;
+        let condition = {where: {employeeNum: employeeData.employeeNum}};
+
+        Employee.update(values, condition)
         .then(() => resolve())
         .catch((err) => reject(`\nunable to update employee: ${err}\n`));
     });
@@ -154,10 +158,13 @@ exports.updateDepartment = (departmentData) => {
             departmentData[property] = null;
         }
     };
-    console.log("&&&&&&&&&&");
+    console.log("\n&&&&&&&&&&\n");
     console.log(departmentData);
+    console.log("\n&&&&&&&&&&\n");
+
     let values = departmentData;
     let condition = {where: {departmentId: departmentData.departmentId}};
+
     Department.update(values,condition )
     .then(() => resolve())
     .catch((err) => reject(`\nunable to update department: ${err}\n`));
@@ -217,11 +224,12 @@ exports.getEmployeesByManager = (managerNum) => {
 //getEmployeeByNum function
 exports.getEmployeeByNum = (num) => {
     return new Promise((resolve, reject) => {
+        console.log("\n\nthis is the emo num: " + num + "\n\n");
         Employee.findAll({
             where: {employeeNum: num}
         })
-        .then((data) => resolve(data))
-        .catch((err) => reject(`\nno results returned for employee number: ${err}\n`));
+        .then((data) => resolve(data[0]))
+        .catch((err) => reject(`\nno results returned for employee: ${err}\n`));
     });
 };
 
