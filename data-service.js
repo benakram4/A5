@@ -158,10 +158,7 @@ exports.updateDepartment = (departmentData) => {
             departmentData[property] = null;
         }
     };
-    console.log("\n&&&&&&&&&&\n");
-    console.log(departmentData);
-    console.log("\n&&&&&&&&&&\n");
-
+  
     let values = departmentData;
     let condition = {where: {departmentId: departmentData.departmentId}};
 
@@ -224,7 +221,7 @@ exports.getEmployeesByManager = (managerNum) => {
 //getEmployeeByNum function
 exports.getEmployeeByNum = (num) => {
     return new Promise((resolve, reject) => {
-        console.log("\n\nthis is the emo num: " + num + "\n\n");
+        //console.log("\n\nthis is the emo num: " + num + "\n\n");
         Employee.findAll({
             where: {employeeNum: num}
         })
@@ -232,4 +229,14 @@ exports.getEmployeeByNum = (num) => {
         .catch((err) => reject(`\nno results returned for employee: ${err}\n`));
     });
 };
+
+exports.deleteEmployeeByNum = (empNum) => {
+    return new Promise((resolve, reject) => {
+        Employee.destroy({
+            where: {employeeNum: empNum}
+        })
+        .then(() => resolve(`\nEmployee ${empNum} was deleted successfully\n`))
+        .catch((err) => reject(`\nunable to delete employee: ${err}\n`));
+    });
+}
 

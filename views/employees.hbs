@@ -30,6 +30,7 @@
                             <th> Status </th>
                             <th> Department </th>
                             <th> Hire On </th>
+                            
                         </tr>
                     </thead>
                     
@@ -44,6 +45,7 @@
                             <td><a href="/employees?status={{this.status}}">{{this.status}}<a/></td>
                             <td><a href="/employees?department={{this.department}}">{{this.department}}<a/></td>
                             <td>{{this.hireDate}}</td>
+                            <td> <a href="/employees/delete/{{employeeNum}}" class="btn btn-danger">Remove</a></td>
                         </tr>
                         {{else}}
                             <div class="col-md-12 text-center">

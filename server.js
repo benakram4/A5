@@ -76,6 +76,7 @@ app.use(function(req,res,next){
 // =================================================================================================
 
 
+// =================================================================================================
 // === Setup HTTP server to listen on port 8080 ====================================================
 var HTTP_PORT = process.env.PORT || 8080;
 // call this function after the http server starts listening for requests
@@ -211,6 +212,16 @@ app.get("/employee/:empNum", (req, res) => {
 				}
 			});
 });
+
+
+//delete employee by emp number function
+app.get("/employees/delete/:empNum", (req, res) => {
+    console.log('\n' + "delete emp num: " + req.params.empNum + '\n');
+    data.deleteEmployeeByNum(req.params.empNum)
+    .then(() => res.redirect("/employees"))
+    .catch((err) => res.status(500).send("\nUnable to Remove Employee / Employee not found: " + err + '\n'));
+});
+
 
 //departments route
 app.get("/departments", function(req, res){
