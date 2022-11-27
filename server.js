@@ -259,8 +259,9 @@ app.post("/images/add",upload.single("imageFile") ,function(req, res){
     fs.readdir("./public/images/uploaded", (err, files) => {
         console.log("Uploading Image");
         if(err){
-            console.log(err);
             console.log("Failed to upload Image");
+            res.status(500).send(`\nUnable to Update Employee: ${err} \n`);
+            
         }
         else{
             console.log("Image Uploaded successfully");
@@ -274,8 +275,8 @@ app.post("/images/add",upload.single("imageFile") ,function(req, res){
 app.post("/employees/add",(req,res) =>{
     data.addEmployee(req.body)
     .then(() => {res.redirect("/employees")})
-    .catch((err) => {console.log(`Error adding emp${err}`)});
-    console.log("adding emp");
+    .catch((err) => {res.status(500).send(`\nUnable to Add Employee: ${err} \n`)});
+    //console.log("adding emp");
 })
 
 
@@ -285,7 +286,7 @@ app.post("/employee/update", (req, res)=> {
     console.log(req.body);
     data.updateEmployee(req.body)
     .then(() => {res.redirect("/employees")})
-    .catch((err) => {console.log(`Error updating emp ${err}`)});
+    .catch((err) => {res.status(500).send(`\nUnable to Update Employee: ${err} \n`)}); 
     //console.log("updating emp");
 });
 
@@ -293,16 +294,14 @@ app.post("/employee/update", (req, res)=> {
 app.post("/departments/add", (req, res) => {
     data.addDepartment(req.body)
     .then(() => {res.redirect("/departments")})
-    .catch((err) => {console.log(`\nError adding dep: ${err}\n`)
-    });
+    .catch((err) => {res.status(500).send(`\nUnable to Add Department: ${err} \n`)});
 });
 
 //update department
 app.post("/department/update", (req, res) => {
     data.updateDepartment(req.body)
     .then(() => {res.redirect("/departments")})
-    .catch((err) => {console.log(`\nError updating dep: ${err}\n`)
-    });
+    .catch((err) => {res.status(500).send(`\nUnable to Update Department: ${err} \n`)});
 });
 
 

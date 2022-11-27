@@ -1,3 +1,7 @@
+ 
+// ==========================================================================================
+// Sequelize Definitions ====================================================================
+// ==========================================================================================
 
 const Sequelize = require('sequelize');
 var sequelize = new Sequelize('swthhypo', 'swthhypo', 'yU2pNh5e_l4WkAwdaM8FXDp8Fa3D2I4w', {
@@ -38,6 +42,7 @@ var Department = sequelize.define('Department', {
     departmentName: Sequelize.STRING
 });
 
+// ==========================================================================================
 
 exports.initialize = () => {
     return new Promise((resolve, reject) => {
@@ -47,35 +52,10 @@ exports.initialize = () => {
     });
 };
 
-// exports.initialize = () => {
-//  return new Promise( (resolve, reject) =>{
-//     fs.readFile("./data/employees.json", (err, data) =>{
-//         if(err){
-//             reject("Error when reading employees data");
-//         }
-//         else{
-//             employees = JSON.parse(data);
-//             fs.readFile("./data/departments.json", (err, data) =>{
-//                 if(err){
-//                     reject("Error when reading departments data");
-//                 }
-//                 else{
-//                     departments = JSON.parse(data);
-//                     resolve();
-//                 }
-//             });
-//         }
-//     });
-//  });
-// }
 
-exports.getAllEmployees = () => {
-    return new Promise((resolve, reject) => {
-        Employee.findAll()
-        .then((data) => resolve(data))
-        .catch((err) => reject("no results returned"));
-    });
-};
+// ==========================================================================================
+//  Departments Functions ===================================================================
+// ==========================================================================================
 
 exports.getDepartments = () =>{
     return new Promise ((resolve, reject) =>{
@@ -85,56 +65,6 @@ exports.getDepartments = () =>{
     });
 }
 
-exports.getManagers = () =>{
-    return new Promise ((resolve, reject) =>{
-        if(employees.length == 0){
-            reject("No Employees in the Data");
-        }
-        else{
-            for(let m in employees){
-                if(employees[m].isManager == true){
-                    managers.push(employees[m]);
-                }
-            }
-        }
-        resolve(managers);
-    });
-}
-
-//updateEmployee function
-exports.updateEmployee = (employeeData) => {
-    return new Promise((resolve, reject)=> {
-      employeeData.isManager = (employeeData.isManager) ? true : false;
-        for(const property in employeeData){
-            if(employeeData[property] == ""){
-                employeeData[property] = null;
-            }
-        };
-
-        let values = employeeData;
-        let condition = {where: {employeeNum: employeeData.employeeNum}};
-
-        Employee.update(values, condition)
-        .then(() => resolve())
-        .catch((err) => reject(`\nunable to update employee: ${err}\n`));
-    });
-}
-
-//addEmployee function
-exports.addEmployee = (employeeData) => {
-    return new Promise((resolve, reject) => {
-     employeeData.isManager = (employeeData.isManager) ? true : false;
-     //check that none of the values are "" if yes set to null
-        for(const property in employeeData){
-            if(employeeData[property] == ""){
-                employeeData[property] = null;
-            }
-        };
-        Employee.create(employeeData)
-        .then(() => resolve())
-        .catch((err) => reject(`\nunable to create employee ${err}\n`));
-    });
-};
 
 //addDepartment function
 exports.addDepartment = (departmentData) => {
@@ -181,9 +111,72 @@ exports.getDepartmentById = (id) => {
     });
 }
 
+// ==========================================================================================
 
 
-    
+// ==========================================================================================
+//  Employee Functions ======================================================================
+// ==========================================================================================
+
+//Get all employees
+exports.getAllEmployees = () => {
+    return new Promise((resolve, reject) => {
+        Employee.findAll()
+        .then((data) => resolve(data))
+        .catch((err) => reject("no results returned"));
+    });
+};
+
+//addEmployee function
+exports.addEmployee = (employeeData) => {
+    return new Promise((resolve, reject) => {
+     employeeData.isManager = (employeeData.isManager) ? true : false;
+     //check that none of the values are "" if yes set to null
+        for(const property in employeeData){
+            if(employeeData[property] == ""){
+                employeeData[property] = null;
+            }
+        };
+        Employee.create(employeeData)
+        .then(() => resolve())
+        .catch((err) => reject(`\nunable to create employee ${err}\n`));
+    });
+};
+
+exports.getManagers = () =>{
+    return new Promise ((resolve, reject) =>{
+        if(employees.length == 0){
+            reject("No Employees in the Data");
+        }
+        else{
+            for(let m in employees){
+                if(employees[m].isManager == true){
+                    managers.push(employees[m]);
+                }
+            }
+        }
+        resolve(managers);
+    });
+}
+
+//updateEmployee function
+exports.updateEmployee = (employeeData) => {
+    return new Promise((resolve, reject)=> {
+      employeeData.isManager = (employeeData.isManager) ? true : false;
+        for(const property in employeeData){
+            if(employeeData[property] == ""){
+                employeeData[property] = null;
+            }
+        };
+
+        let values = employeeData;
+        let condition = {where: {employeeNum: employeeData.employeeNum}};
+
+        Employee.update(values, condition)
+        .then(() => resolve())
+        .catch((err) => reject(`\nunable to update employee: ${err}\n`));
+    });
+}
 
 //getEmployeesByStatus function
 exports.getEmployeesByStatus = (status) => {    
@@ -239,4 +232,3 @@ exports.deleteEmployeeByNum = (empNum) => {
         .catch((err) => reject(`\nunable to delete employee: ${err}\n`));
     });
 }
-
